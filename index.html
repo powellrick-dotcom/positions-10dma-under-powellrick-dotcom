@@ -131,6 +131,40 @@
     gap: 1rem;
   }
   section h2 span { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+  .index-card .name { margin-top: 0.35rem; min-height: 1.3em; }
+  .sheet-link { color: var(--accent); text-decoration: none; font-size: 0.82rem; }
+  .sheet-link:hover { text-decoration: underline; }
+  .status.neutral { color: var(--muted); background: rgba(139, 155, 176, 0.12); }
+  .etf-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .etf-summary .pill { margin: 0; }
+  .table-wrap { overflow-x: auto; }
+  .compact th, .compact td { padding: 0.52rem 0.8rem; }
+  .mover-period { padding: 0.8rem 1rem 0; }
+  .mover-period:last-child { padding-bottom: 1rem; }
+  .mover-period h3 {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.55rem;
+    color: var(--text);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .mover-period h3 span { color: var(--muted); font-size: 0.78rem; font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .mover-sides { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.75rem; }
+  .mover-side { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .mover-side h4 { margin: 0; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mover-side.gainer h4 { color: var(--above); background: var(--above-bg); }
+  .mover-side.loser h4 { color: var(--below); background: var(--below-bg); }
+  .mover-side table { font-size: 0.86rem; }
+  .mover-side th, .mover-side td { padding: 0.45rem 0.65rem; }
   table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
   th, td { padding: 0.65rem 1rem; text-align: left; }
   th { color: var(--muted); font-weight: 550; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -188,7 +222,8 @@
 
   <div id="panel-markets" class="panel">
     <div class="meta" id="markets-updated" style="margin-bottom:0.85rem"></div>
-    <div class="market" id="etfs"></div>
+    <div class="market" id="indexes"></div>
+    <div id="etf-list"></div>
     <div id="movers"></div>
   </div>
 
@@ -244,12 +279,1948 @@
     ]
   };
 
-  // Filled by Markets bot each morning (QQQ / SPMO / IPO briefing).
+  // Raw markets.json snapshot from Markets bot.
   window.MARKETS_BRIEFING = {
-    updated: null,
-    session: null,
-    etfs: [],
-    movers: []
+    "schemaVersion": 1,
+    "source": "Markets bot",
+    "updated": "2026-09-23 08:41 Europe/London",
+    "asOf": "2026-09-22",
+    "session": "Morning",
+    "timezone": "Europe/London",
+    "indexes": [
+      {
+        "ticker": "QQQ",
+        "name": "Invesco QQQ Trust / Nasdaq-100",
+        "price": 747.46,
+        "dayPct": 0.81,
+        "sma50": null,
+        "pctVsSma50": null,
+        "vsSma50": null,
+        "macdDaily": null,
+        "macdWeekly": null,
+        "confluence": null,
+        "sheetUrl": "https://docs.google.com/spreadsheets/d/1vJC_7cE-aXWEJLAs6e1HBhH-n5MaJkIOMTTvXZzYGjg/edit",
+        "sheetId": "1vJC_7cE-aXWEJLAs6e1HBhH-n5MaJkIOMTTvXZzYGjg"
+      },
+      {
+        "ticker": "SPMO",
+        "name": "Invesco S&P 500 Momentum ETF",
+        "price": 153.3,
+        "dayPct": 0.76,
+        "sma50": null,
+        "pctVsSma50": null,
+        "vsSma50": null,
+        "macdDaily": null,
+        "macdWeekly": null,
+        "confluence": null,
+        "sheetUrl": "https://docs.google.com/spreadsheets/d/152V-mAOV-TEa0lB1jY-olQm3jJ6HzoByvtmKsYlwx8c/edit",
+        "sheetId": "152V-mAOV-TEa0lB1jY-olQm3jJ6HzoByvtmKsYlwx8c"
+      },
+      {
+        "ticker": "IPO",
+        "name": "Renaissance IPO ETF",
+        "price": 54.65,
+        "dayPct": 1.41,
+        "sma50": null,
+        "pctVsSma50": null,
+        "vsSma50": null,
+        "macdDaily": null,
+        "macdWeekly": null,
+        "confluence": null,
+        "sheetUrl": "https://docs.google.com/spreadsheets/d/1xBMHMLfVH8eCN_ULpvSKaZc30YmMfL8dhJldMe6hsDw/edit",
+        "sheetId": "1xBMHMLfVH8eCN_ULpvSKaZc30YmMfL8dhJldMe6hsDw"
+      }
+    ],
+    "etfList": {
+      "universe": 55,
+      "eqDayPct": 1.45,
+      "smaSummary": "12 Above / 6 Below of 18 unique movers",
+      "sheetUrl": "https://docs.google.com/spreadsheets/d/1qHjh8te5FAQUil8X2gm6ZfMKaYPiJlXm/edit",
+      "sheetId": "1qHjh8te5FAQUil8X2gm6ZfMKaYPiJlXm",
+      "etfs": [
+        {
+          "ticker": "IBIT",
+          "name": "iShares Bitcoin Trust",
+          "price": 49.01,
+          "sma50": 39.9698,
+          "pctVsSma50": 22.62,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "GBTC",
+          "name": "Grayscale Bitcoin Trust",
+          "price": 66.88,
+          "sma50": 54.613,
+          "pctVsSma50": 22.46,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "ARKB",
+          "name": "ARK 21Shares Bitcoin ETF",
+          "price": 28.67,
+          "sma50": 23.3967,
+          "pctVsSma50": 22.54,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "QLD",
+          "name": "ProShares Ultra QQQ",
+          "price": 96.27,
+          "sma50": 88.9592,
+          "pctVsSma50": 8.22,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "SMH",
+          "name": "VanEck Semiconductor ETF",
+          "price": 596.03,
+          "sma50": 564.484,
+          "pctVsSma50": 5.59,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "USO",
+          "name": "United States Oil Fund",
+          "price": 148.16,
+          "sma50": 133.3148,
+          "pctVsSma50": 11.14,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "IEO",
+          "name": "iShares U.S. Oil & Gas Exploration",
+          "price": 135.64,
+          "sma50": 130.5506,
+          "pctVsSma50": 3.9,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "XOP",
+          "name": "SPDR S&P Oil & Gas Exploration",
+          "price": 184.75,
+          "sma50": 180.9526,
+          "pctVsSma50": 2.1,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "XLE",
+          "name": "Energy Select Sector SPDR",
+          "price": 62.46,
+          "sma50": 61.3242,
+          "pctVsSma50": 1.85,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "XLP",
+          "name": "Consumer Staples Select Sector SPDR",
+          "price": 81.92,
+          "sma50": 84.8746,
+          "pctVsSma50": -3.48,
+          "vsSma50": "BELOW",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "ARKG",
+          "name": "ARK Genomic Revolution ETF",
+          "price": 51.81,
+          "sma50": 44.154,
+          "pctVsSma50": 17.34,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "XRT",
+          "name": "SPDR S&P Retail ETF",
+          "price": 82.56,
+          "sma50": 87.723,
+          "pctVsSma50": -5.89,
+          "vsSma50": "BELOW",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "HACK",
+          "name": "Amplify Cybersecurity ETF",
+          "price": 122.98,
+          "sma50": 112.5874,
+          "pctVsSma50": 9.23,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "KWEB",
+          "name": "KraneShares CSI China Internet",
+          "price": 25.18,
+          "sma50": 26.5826,
+          "pctVsSma50": -5.28,
+          "vsSma50": "BELOW",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "FXI",
+          "name": "iShares China Large-Cap ETF",
+          "price": 34.91,
+          "sma50": 35.1736,
+          "pctVsSma50": -0.75,
+          "vsSma50": "BELOW",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "SLV",
+          "name": "iShares Silver Trust",
+          "price": 59.63,
+          "sma50": 56.9286,
+          "pctVsSma50": 4.75,
+          "vsSma50": "ABOVE",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "XLY",
+          "name": "Consumer Discretionary Select Sector SPDR",
+          "price": 112.23,
+          "sma50": 115.2718,
+          "pctVsSma50": -2.64,
+          "vsSma50": "BELOW",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        },
+        {
+          "ticker": "XHB",
+          "name": "SPDR S&P Homebuilders ETF",
+          "price": 96.96,
+          "sma50": 105.0374,
+          "pctVsSma50": -7.69,
+          "vsSma50": "BELOW",
+          "macdDaily": null,
+          "macdWeekly": null,
+          "confluence": null
+        }
+      ]
+    },
+    "movers": [
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "MPWR",
+        "name": "Monolithic Power Systems",
+        "pct": 8.06,
+        "price": 1380.62,
+        "sma50": 1303.3495,
+        "pctVsSma50": 5.93,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "SHOP",
+        "name": "Shopify",
+        "pct": 7.12,
+        "price": 147.74,
+        "sma50": 136.8448,
+        "pctVsSma50": 7.96,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "SNDK",
+        "name": "Sandisk",
+        "pct": 6.82,
+        "price": 1887.04,
+        "sma50": 1505.4771,
+        "pctVsSma50": 25.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "ALAB",
+        "name": "Astera Labs",
+        "pct": 6.67,
+        "price": 363.46,
+        "sma50": 303.9607,
+        "pctVsSma50": 19.57,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "MU",
+        "name": "Micron Technology",
+        "pct": 5.0,
+        "price": 1096.16,
+        "sma50": 931.7333,
+        "pctVsSma50": 17.65,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "ADBE",
+        "name": "Adobe",
+        "pct": -4.52,
+        "price": 238.25,
+        "sma50": 256.7292,
+        "pctVsSma50": -7.2,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "CSCO",
+        "name": "Cisco Systems",
+        "pct": -4.5,
+        "price": 106.44,
+        "sma50": 112.8151,
+        "pctVsSma50": -5.65,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "INTU",
+        "name": "Intuit",
+        "pct": -3.87,
+        "price": 292.35,
+        "sma50": 324.9938,
+        "pctVsSma50": -10.04,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "ABNB",
+        "name": "Airbnb",
+        "pct": -3.01,
+        "price": 161.81,
+        "sma50": 167.6822,
+        "pctVsSma50": -3.5,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "day",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "BKNG",
+        "name": "Booking Holdings",
+        "pct": -2.55,
+        "price": 164.22,
+        "sma50": 192.5486,
+        "pctVsSma50": -14.71,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "ALAB",
+        "name": "Astera Labs",
+        "pct": 43.92,
+        "price": 363.46,
+        "sma50": 303.9607,
+        "pctVsSma50": 19.57,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "ARM",
+        "name": "Arm Holdings",
+        "pct": 37.78,
+        "price": 333.2,
+        "sma50": 261.7354,
+        "pctVsSma50": 27.3,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "MSTR",
+        "name": "Strategy",
+        "pct": 29.11,
+        "price": 167.33,
+        "sma50": 113.797,
+        "pctVsSma50": 47.04,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "INTC",
+        "name": "Intel",
+        "pct": 27.51,
+        "price": 123.86,
+        "sma50": 97.7471,
+        "pctVsSma50": 26.71,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "AMD",
+        "name": "Advanced Micro Devices",
+        "pct": 23.71,
+        "price": 623.77,
+        "sma50": 498.7869,
+        "pctVsSma50": 25.06,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "FANG",
+        "name": "Diamondback Energy",
+        "pct": -12.78,
+        "price": 184.5,
+        "sma50": 199.346,
+        "pctVsSma50": -7.45,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "INTU",
+        "name": "Intuit",
+        "pct": -11.21,
+        "price": 292.35,
+        "sma50": 324.9938,
+        "pctVsSma50": -10.04,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "TMUS",
+        "name": "T-Mobile US",
+        "pct": -10.01,
+        "price": 162.41,
+        "sma50": 180.2446,
+        "pctVsSma50": -9.89,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "CMCSA",
+        "name": "Comcast",
+        "pct": -8.19,
+        "price": 22.42,
+        "sma50": 24.9437,
+        "pctVsSma50": -10.12,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "week",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "ADBE",
+        "name": "Adobe",
+        "pct": -7.57,
+        "price": 238.25,
+        "sma50": 256.7292,
+        "pctVsSma50": -7.2,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "SNDK",
+        "name": "Sandisk",
+        "pct": 694.94,
+        "price": 1887.04,
+        "sma50": 1505.4771,
+        "pctVsSma50": 25.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "MU",
+        "name": "Micron Technology",
+        "pct": 284.07,
+        "price": 1096.16,
+        "sma50": 931.7333,
+        "pctVsSma50": 17.65,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "INTC",
+        "name": "Intel",
+        "pct": 235.66,
+        "price": 123.86,
+        "sma50": 97.7471,
+        "pctVsSma50": 26.71,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "STX",
+        "name": "Seagate Technology",
+        "pct": 234.01,
+        "price": 919.84,
+        "sma50": 843.8565,
+        "pctVsSma50": 9.0,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "MRVL",
+        "name": "Marvell Technology",
+        "pct": 208.73,
+        "price": 262.36,
+        "sma50": 217.2737,
+        "pctVsSma50": 20.75,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "INTU",
+        "name": "Intuit",
+        "pct": -55.87,
+        "price": 292.35,
+        "sma50": 324.9938,
+        "pctVsSma50": -10.04,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "APP",
+        "name": "AppLovin",
+        "pct": -51.21,
+        "price": 328.73,
+        "sma50": 351.3746,
+        "pctVsSma50": -6.44,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "HON",
+        "name": "Honeywell",
+        "pct": -45.7,
+        "price": 211.85,
+        "sma50": 224.2302,
+        "pctVsSma50": -5.52,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "ALNY",
+        "name": "Alnylam Pharmaceuticals",
+        "pct": -36.72,
+        "price": 251.65,
+        "sma50": 246.1222,
+        "pctVsSma50": 2.25,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "QQQ",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "ADBE",
+        "name": "Adobe",
+        "pct": -31.93,
+        "price": 238.25,
+        "sma50": 256.7292,
+        "pctVsSma50": -7.2,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "MPWR",
+        "name": "Monolithic Power Systems, Inc.",
+        "pct": 8.06,
+        "price": 1380.62,
+        "sma50": 1303.3495,
+        "pctVsSma50": 5.93,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "SNDK",
+        "name": "Sandisk Corp.",
+        "pct": 6.82,
+        "price": 1887.04,
+        "sma50": 1505.4771,
+        "pctVsSma50": 25.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "MU",
+        "name": "Micron Technology, Inc.",
+        "pct": 5.0,
+        "price": 1096.16,
+        "sma50": 931.7333,
+        "pctVsSma50": 17.65,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "STX",
+        "name": "Seagate Technology Holdings PLC",
+        "pct": 4.85,
+        "price": 919.84,
+        "sma50": 843.8565,
+        "pctVsSma50": 9.0,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "TER",
+        "name": "Teradyne, Inc.",
+        "pct": 4.49,
+        "price": 398.69,
+        "sma50": 365.8451,
+        "pctVsSma50": 8.98,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "SCHW",
+        "name": "Charles Schwab Corp. (The)",
+        "pct": -6.11,
+        "price": 100.35,
+        "sma50": 106.8224,
+        "pctVsSma50": -6.06,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "CSCO",
+        "name": "Cisco Systems, Inc.",
+        "pct": -4.5,
+        "price": 106.44,
+        "sma50": 112.8151,
+        "pctVsSma50": -5.65,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "LDOS",
+        "name": "Leidos Holdings, Inc.",
+        "pct": -3.84,
+        "price": 123.31,
+        "sma50": 128.0882,
+        "pctVsSma50": -3.73,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "NOC",
+        "name": "Northrop Grumman Corp.",
+        "pct": -3.19,
+        "price": 509.86,
+        "sma50": 542.1486,
+        "pctVsSma50": -5.96,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "day",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "NTRS",
+        "name": "Northern Trust Corp.",
+        "pct": -3.1,
+        "price": 173.4,
+        "sma50": 184.2746,
+        "pctVsSma50": -5.9,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "INTC",
+        "name": "Intel Corp.",
+        "pct": 27.51,
+        "price": 123.86,
+        "sma50": 97.7471,
+        "pctVsSma50": 26.71,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "AMD",
+        "name": "Advanced Micro Devices, Inc.",
+        "pct": 23.71,
+        "price": 623.77,
+        "sma50": 498.7869,
+        "pctVsSma50": 25.06,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "SNDK",
+        "name": "Sandisk Corp.",
+        "pct": 23.26,
+        "price": 1887.04,
+        "sma50": 1505.4771,
+        "pctVsSma50": 25.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "MPWR",
+        "name": "Monolithic Power Systems, Inc.",
+        "pct": 20.85,
+        "price": 1380.62,
+        "sma50": 1303.3495,
+        "pctVsSma50": 5.93,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "TER",
+        "name": "Teradyne, Inc.",
+        "pct": 19.78,
+        "price": 398.69,
+        "sma50": 365.8451,
+        "pctVsSma50": 8.98,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "BG",
+        "name": "Bunge Global S.A.",
+        "pct": -9.66,
+        "price": 110.0,
+        "sma50": 115.513,
+        "pctVsSma50": -4.77,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "SCHW",
+        "name": "Charles Schwab Corp. (The)",
+        "pct": -6.9,
+        "price": 100.35,
+        "sma50": 106.8224,
+        "pctVsSma50": -6.06,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "XOM",
+        "name": "Exxon Mobil Corp.",
+        "pct": -6.27,
+        "price": 158.71,
+        "sma50": 158.4574,
+        "pctVsSma50": 0.16,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "CHRW",
+        "name": "C.H. Robinson Worldwide, Inc.",
+        "pct": -5.12,
+        "price": 149.56,
+        "sma50": 160.1431,
+        "pctVsSma50": -6.61,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "week",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "FOX",
+        "name": "Fox Corp., Class B",
+        "pct": -5.0,
+        "price": 57.32,
+        "sma50": 56.532,
+        "pctVsSma50": 1.39,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "SNDK",
+        "name": "Sandisk Corp.",
+        "pct": 694.94,
+        "price": 1887.04,
+        "sma50": 1505.4771,
+        "pctVsSma50": 25.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "MU",
+        "name": "Micron Technology, Inc.",
+        "pct": 284.07,
+        "price": 1096.16,
+        "sma50": 931.7333,
+        "pctVsSma50": 17.65,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "INTC",
+        "name": "Intel Corp.",
+        "pct": 235.66,
+        "price": 123.86,
+        "sma50": 97.7471,
+        "pctVsSma50": 26.71,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "STX",
+        "name": "Seagate Technology Holdings PLC",
+        "pct": 234.01,
+        "price": 919.84,
+        "sma50": 843.8565,
+        "pctVsSma50": 9.0,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "AMD",
+        "name": "Advanced Micro Devices, Inc.",
+        "pct": 191.26,
+        "price": 623.77,
+        "sma50": 498.7869,
+        "pctVsSma50": 25.06,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "ROL",
+        "name": "Rollins, Inc.",
+        "pct": -45.25,
+        "price": 32.86,
+        "sma50": 37.3852,
+        "pctVsSma50": -12.1,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "NRG",
+        "name": "NRG Energy, Inc.",
+        "pct": -35.47,
+        "price": 102.75,
+        "sma50": 120.2624,
+        "pctVsSma50": -14.56,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "LDOS",
+        "name": "Leidos Holdings, Inc.",
+        "pct": -31.65,
+        "price": 123.31,
+        "sma50": 128.0882,
+        "pctVsSma50": -3.73,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "IDXX",
+        "name": "IDEXX Laboratories, Inc.",
+        "pct": -22.92,
+        "price": 521.5,
+        "sma50": 549.1233,
+        "pctVsSma50": -5.03,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "SPMO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "HII",
+        "name": "Huntington Ingalls Industries, Inc.",
+        "pct": -20.33,
+        "price": 270.95,
+        "sma50": 295.7998,
+        "pctVsSma50": -8.4,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "BLLN",
+        "name": "BillionToOne",
+        "pct": 11.76,
+        "price": 116.07,
+        "sma50": 109.7507,
+        "pctVsSma50": 5.76,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "TTAN",
+        "name": "ServiceTitan",
+        "pct": 8.9,
+        "price": 61.56,
+        "sma50": 80.2619,
+        "pctVsSma50": -23.3,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "MDLN",
+        "name": "Medline",
+        "pct": 7.73,
+        "price": 34.43,
+        "sma50": 35.9905,
+        "pctVsSma50": -4.34,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "ALAB",
+        "name": "Astera Labs",
+        "pct": 6.67,
+        "price": 363.46,
+        "sma50": 303.9607,
+        "pctVsSma50": 19.57,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "PONY",
+        "name": "Pony AI",
+        "pct": 5.96,
+        "price": 7.29,
+        "sma50": 7.4037,
+        "pctVsSma50": -1.54,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "VIK",
+        "name": "Viking Holdings",
+        "pct": -5.85,
+        "price": 81.02,
+        "sma50": 94.8612,
+        "pctVsSma50": -14.59,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "VG",
+        "name": "Venture Global",
+        "pct": -5.49,
+        "price": 12.91,
+        "sma50": 14.0082,
+        "pctVsSma50": -7.84,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "KRMN",
+        "name": "Karman Holdings",
+        "pct": -4.86,
+        "price": 33.5,
+        "sma50": 47.461,
+        "pctVsSma50": -29.42,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "CHYM",
+        "name": "Chime Financial",
+        "pct": -4.34,
+        "price": 28.62,
+        "sma50": 28.893,
+        "pctVsSma50": -0.94,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "day",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "KGS",
+        "name": "Kodiak Gas Services",
+        "pct": -2.76,
+        "price": 54.69,
+        "sma50": 60.9618,
+        "pctVsSma50": -10.29,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "ALAB",
+        "name": "Astera Labs",
+        "pct": 43.92,
+        "price": 363.46,
+        "sma50": 303.9607,
+        "pctVsSma50": 19.57,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "ARM",
+        "name": "Arm Holdings",
+        "pct": 37.78,
+        "price": 333.2,
+        "sma50": 261.7354,
+        "pctVsSma50": 27.3,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "FPS",
+        "name": "Forgent Power Solutions",
+        "pct": 22.83,
+        "price": 38.52,
+        "sma50": 35.2056,
+        "pctVsSma50": 9.41,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "CBRS",
+        "name": "Cerebras Systems",
+        "pct": 15.42,
+        "price": 212.41,
+        "sma50": 201.7083,
+        "pctVsSma50": 5.31,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "BLSH",
+        "name": "Bullish",
+        "pct": 14.78,
+        "price": 40.7,
+        "sma50": 28.7434,
+        "pctVsSma50": 41.6,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "VG",
+        "name": "Venture Global",
+        "pct": -15.57,
+        "price": 12.91,
+        "sma50": 14.0082,
+        "pctVsSma50": -7.84,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "CHYM",
+        "name": "Chime Financial",
+        "pct": -14.85,
+        "price": 28.62,
+        "sma50": 28.893,
+        "pctVsSma50": -0.94,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "KRMN",
+        "name": "Karman Holdings",
+        "pct": -10.6,
+        "price": 33.5,
+        "sma50": 47.461,
+        "pctVsSma50": -29.42,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "FIG",
+        "name": "Figma",
+        "pct": -8.71,
+        "price": 21.8,
+        "sma50": 24.617,
+        "pctVsSma50": -11.44,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "week",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "KVYO",
+        "name": "Klaviyo",
+        "pct": -6.54,
+        "price": 15.87,
+        "sma50": 17.805,
+        "pctVsSma50": -10.87,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "ARM",
+        "name": "Arm Holdings",
+        "pct": 204.82,
+        "price": 333.2,
+        "sma50": 261.7354,
+        "pctVsSma50": 27.3,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "ALAB",
+        "name": "Astera Labs",
+        "pct": 118.48,
+        "price": 363.46,
+        "sma50": 303.9607,
+        "pctVsSma50": 19.57,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "VG",
+        "name": "Venture Global",
+        "pct": 89.3,
+        "price": 12.91,
+        "sma50": 14.0082,
+        "pctVsSma50": -7.84,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "LB",
+        "name": "LandBridge",
+        "pct": 77.4,
+        "price": 86.91,
+        "sma50": 81.7922,
+        "pctVsSma50": 6.26,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "BTSG",
+        "name": "BrightSpring Health Services",
+        "pct": 51.0,
+        "price": 56.55,
+        "sma50": 62.5941,
+        "pctVsSma50": -9.66,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "FRVO",
+        "name": "Fervo Energy",
+        "pct": -55.01,
+        "price": 16.44,
+        "sma50": 19.8693,
+        "pctVsSma50": -17.26,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "KRMN",
+        "name": "Karman Holdings",
+        "pct": -54.22,
+        "price": 33.5,
+        "sma50": 47.461,
+        "pctVsSma50": -29.42,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "KLAR",
+        "name": "Klarna Group",
+        "pct": -52.72,
+        "price": 13.67,
+        "sma50": 16.713,
+        "pctVsSma50": -18.21,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "KVYO",
+        "name": "Klaviyo",
+        "pct": -51.12,
+        "price": 15.87,
+        "sma50": 17.805,
+        "pctVsSma50": -10.87,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "IPO",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "PONY",
+        "name": "Pony AI",
+        "pct": -49.72,
+        "price": 7.29,
+        "sma50": 7.4037,
+        "pctVsSma50": -1.54,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "IBIT",
+        "name": "iShares Bitcoin Trust",
+        "pct": 6.5,
+        "price": 49.01,
+        "sma50": 39.9698,
+        "pctVsSma50": 22.62,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "GBTC",
+        "name": "Grayscale Bitcoin Trust",
+        "pct": 6.48,
+        "price": 66.88,
+        "sma50": 54.613,
+        "pctVsSma50": 22.46,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "ARKB",
+        "name": "ARK 21Shares Bitcoin ETF",
+        "pct": 6.46,
+        "price": 28.67,
+        "sma50": 23.3967,
+        "pctVsSma50": 22.54,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "QLD",
+        "name": "ProShares Ultra QQQ",
+        "pct": 5.79,
+        "price": 96.27,
+        "sma50": 88.9592,
+        "pctVsSma50": 8.22,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "SMH",
+        "name": "VanEck Semiconductor ETF",
+        "pct": 4.02,
+        "price": 596.03,
+        "sma50": 564.484,
+        "pctVsSma50": 5.59,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "USO",
+        "name": "United States Oil Fund",
+        "pct": -3.68,
+        "price": 148.16,
+        "sma50": 133.3148,
+        "pctVsSma50": 11.14,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "IEO",
+        "name": "iShares U.S. Oil & Gas Exploration",
+        "pct": -3.13,
+        "price": 135.64,
+        "sma50": 130.5506,
+        "pctVsSma50": 3.9,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "XOP",
+        "name": "SPDR S&P Oil & Gas Exploration",
+        "pct": -3.07,
+        "price": 184.75,
+        "sma50": 180.9526,
+        "pctVsSma50": 2.1,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "XLE",
+        "name": "Energy Select Sector SPDR",
+        "pct": -2.88,
+        "price": 62.46,
+        "sma50": 61.3242,
+        "pctVsSma50": 1.85,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "day",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "XLP",
+        "name": "Consumer Staples Select Sector SPDR",
+        "pct": -1.06,
+        "price": 81.92,
+        "sma50": 84.8746,
+        "pctVsSma50": -3.48,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "ARKG",
+        "name": "ARK Genomic Revolution ETF",
+        "pct": 10.71,
+        "price": 51.81,
+        "sma50": 44.154,
+        "pctVsSma50": 17.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "SMH",
+        "name": "VanEck Semiconductor ETF",
+        "pct": 10.07,
+        "price": 596.03,
+        "sma50": 564.484,
+        "pctVsSma50": 5.59,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "IBIT",
+        "name": "iShares Bitcoin Trust",
+        "pct": 9.54,
+        "price": 49.01,
+        "sma50": 39.9698,
+        "pctVsSma50": 22.62,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "GBTC",
+        "name": "Grayscale Bitcoin Trust",
+        "pct": 9.51,
+        "price": 66.88,
+        "sma50": 54.613,
+        "pctVsSma50": 22.46,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "ARKB",
+        "name": "ARK 21Shares Bitcoin ETF",
+        "pct": 9.47,
+        "price": 28.67,
+        "sma50": 23.3967,
+        "pctVsSma50": 22.54,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "USO",
+        "name": "United States Oil Fund",
+        "pct": -5.43,
+        "price": 148.16,
+        "sma50": 133.3148,
+        "pctVsSma50": 11.14,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "XOP",
+        "name": "SPDR S&P Oil & Gas Exploration",
+        "pct": -4.51,
+        "price": 184.75,
+        "sma50": 180.9526,
+        "pctVsSma50": 2.1,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "IEO",
+        "name": "iShares U.S. Oil & Gas Exploration",
+        "pct": -3.71,
+        "price": 135.64,
+        "sma50": 130.5506,
+        "pctVsSma50": 3.9,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "XRT",
+        "name": "SPDR S&P Retail ETF",
+        "pct": -3.46,
+        "price": 82.56,
+        "sma50": 87.723,
+        "pctVsSma50": -5.89,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "week",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "XLE",
+        "name": "Energy Select Sector SPDR",
+        "pct": -3.21,
+        "price": 62.46,
+        "sma50": 61.3242,
+        "pctVsSma50": 1.85,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 1,
+        "ticker": "USO",
+        "name": "United States Oil Fund",
+        "pct": 114.23,
+        "price": 148.16,
+        "sma50": 133.3148,
+        "pctVsSma50": 11.14,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 2,
+        "ticker": "ARKG",
+        "name": "ARK Genomic Revolution ETF",
+        "pct": 78.84,
+        "price": 51.81,
+        "sma50": 44.154,
+        "pctVsSma50": 17.34,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 3,
+        "ticker": "SMH",
+        "name": "VanEck Semiconductor ETF",
+        "pct": 65.5,
+        "price": 596.03,
+        "sma50": 564.484,
+        "pctVsSma50": 5.59,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 4,
+        "ticker": "HACK",
+        "name": "Amplify Cybersecurity ETF",
+        "pct": 53.02,
+        "price": 122.98,
+        "sma50": 112.5874,
+        "pctVsSma50": 9.23,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "gainer",
+        "rank": 5,
+        "ticker": "IEO",
+        "name": "iShares U.S. Oil & Gas Exploration",
+        "pct": 51.96,
+        "price": 135.64,
+        "sma50": 130.5506,
+        "pctVsSma50": 3.9,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 1,
+        "ticker": "KWEB",
+        "name": "KraneShares CSI China Internet",
+        "pct": -26.05,
+        "price": 25.18,
+        "sma50": 26.5826,
+        "pctVsSma50": -5.28,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 2,
+        "ticker": "FXI",
+        "name": "iShares China Large-Cap ETF",
+        "pct": -8.83,
+        "price": 34.91,
+        "sma50": 35.1736,
+        "pctVsSma50": -0.75,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 3,
+        "ticker": "SLV",
+        "name": "iShares Silver Trust",
+        "pct": -7.44,
+        "price": 59.63,
+        "sma50": 56.9286,
+        "pctVsSma50": 4.75,
+        "vsSma50": "ABOVE",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 4,
+        "ticker": "XLY",
+        "name": "Consumer Discretionary Select Sector SPDR",
+        "pct": -6.01,
+        "price": 112.23,
+        "sma50": 115.2718,
+        "pctVsSma50": -2.64,
+        "vsSma50": "BELOW",
+        "note": ""
+      },
+      {
+        "list": "ETF_LIST",
+        "period": "ytd",
+        "side": "loser",
+        "rank": 5,
+        "ticker": "XHB",
+        "name": "SPDR S&P Homebuilders ETF",
+        "pct": -5.83,
+        "price": 96.96,
+        "sma50": 105.0374,
+        "pctVsSma50": -7.69,
+        "vsSma50": "BELOW",
+        "note": ""
+      }
+    ],
+    "notes": "ETF list report provides top movers rather than a full per-ticker table; etfList.etfs contains the unique tickers present across day/week/ytd gainers and losers until the next run."
   };
 
   function fmtPct(n) {
@@ -325,63 +2296,142 @@
     return "mixed";
   }
 
+  function smaClass(v) {
+    const value = (v || "").toUpperCase();
+    if (value === "ABOVE") return "above";
+    if (value === "BELOW") return "below";
+    return "neutral";
+  }
+
   function renderMarkets() {
     const data = window.MARKETS_BRIEFING || {};
-    const etfsEl = document.getElementById("etfs");
+    const indexesEl = document.getElementById("indexes");
+    const etfListEl = document.getElementById("etf-list");
     const moversEl = document.getElementById("movers");
     const upd = document.getElementById("markets-updated");
 
-    if (!data.updated || !(data.etfs && data.etfs.length)) {
-      upd.textContent = "Waiting for Markets bot morning briefing…";
-      etfsEl.innerHTML = "";
-      moversEl.innerHTML = '<section><div class="empty">Markets tab fills after the weekday ~8:29am UK Markets bot run (QQQ / SPMO / IPO · SMA50 · D+W MACD).</div></section>';
+    if (data.updated == null) {
+      upd.textContent = "Waiting for Markets bot ~8:29am UK write to /workspace/shared/dashboard/markets.json";
+      indexesEl.innerHTML = "";
+      etfListEl.innerHTML = "";
+      moversEl.innerHTML = '<section><div class="empty">Waiting for the Markets bot to publish the morning briefing.</div></section>';
       return;
     }
-    upd.textContent = data.updated + (data.session ? " · " + data.session : "");
 
-    etfsEl.innerHTML = data.etfs.map(e => {
-      const dayClass = (e.dayPct ?? 0) >= 0 ? "pos" : "neg";
-      const vs = (e.vsSma50 || "").toUpperCase() === "ABOVE" ? "above" : "below";
-      const conf = confluenceClass(e.confluence);
-      return `<div class="etf-card">
-        <div class="label">ETF · SMA50 · MACD D+W</div>
-        <div class="row"><div class="sym">${e.ticker}</div><div class="price">${fmtPrice(e.price)}</div></div>
+    const headerParts = [
+      "Updated " + (data.updated || "—"),
+      "Session " + (data.session || "—"),
+      "As of " + (data.asOf || "—")
+    ];
+    if (data.timezone) headerParts.push(data.timezone);
+    upd.textContent = headerParts.join(" · ");
+
+    const indexOrder = ["QQQ", "SPMO", "IPO"];
+    const indexes = indexOrder.map(ticker =>
+      (data.indexes || []).find(index => index.ticker === ticker) || { ticker }
+    );
+    indexesEl.innerHTML = indexes.map(index => {
+      const dayClass = (index.dayPct ?? 0) >= 0 ? "pos" : "neg";
+      const smaStatus = index.vsSma50 || "—";
+      const conf = confluenceClass(index.confluence);
+      const sheet = index.sheetUrl
+        ? `<a class="sheet-link" href="${index.sheetUrl}" target="_blank" rel="noopener">Sheet</a>`
+        : "";
+      return `<div class="market-card index-card">
+        <div class="label">Index · SMA50</div>
+        <div class="row"><div class="sym">${index.ticker}</div><div class="price">${fmtPrice(index.price)}</div></div>
+        <div class="meta name">${index.name || ""}</div>
         <div class="bottom">
-          <span class="status ${vs}">SMA50 ${e.vsSma50 || "—"}</span>
-          <span class="badge ${conf}">${e.confluence || "—"}</span>
-          <span class="num ${dayClass}">${fmtPct(e.dayPct)}</span>
+          <span class="num ${dayClass}">${fmtPct(index.dayPct)}</span>
+          <span class="status ${smaClass(smaStatus)}">SMA50 ${smaStatus}</span>
         </div>
-        ${e.note ? `<div class="meta" style="margin-top:0.45rem">${e.note}</div>` : ""}
+        <div class="bottom">
+          <span class="badge ${conf}">${index.confluence || "—"}</span>
+          <span class="meta">${index.pctVsSma50 == null ? "" : fmtPct(index.pctVsSma50) + " vs SMA50"}</span>
+          ${sheet}
+        </div>
       </div>`;
     }).join("");
 
-    const byList = {};
-    (data.movers || []).forEach(m => {
-      const k = m.list || "Movers";
-      (byList[k] = byList[k] || []).push(m);
-    });
-    const keys = Object.keys(byList);
-    if (!keys.length) {
-      moversEl.innerHTML = "";
-      return;
-    }
-    moversEl.innerHTML = keys.map(k => {
-      const rows = byList[k].map(m => {
-        const dayClass = (m.dayPct ?? 0) >= 0 ? "pos" : "neg";
-        return `<tr>
-          <td class="ticker">${m.ticker}</td>
-          <td class="num ${dayClass}">${fmtPct(m.dayPct)}</td>
-          <td class="meta">${m.note || ""}</td>
-        </tr>`;
-      }).join("");
-      return `<section>
-        <h2>${k} movers <span>${byList[k].length}</span></h2>
-        <table>
-          <thead><tr><th>Ticker</th><th>Day</th><th></th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </section>`;
+    const etfList = data.etfList || {};
+    const etfs = etfList.etfs || [];
+    const listSheet = etfList.sheetUrl
+      ? `<a class="sheet-link" href="${etfList.sheetUrl}" target="_blank" rel="noopener">Sheet</a>`
+      : "";
+    const etfRows = etfs.map(etf => {
+      const dayClass = (etf.dayPct ?? 0) >= 0 ? "pos" : "neg";
+      const vs = etf.vsSma50 || "—";
+      const conf = confluenceClass(etf.confluence);
+      return `<tr>
+        <td class="ticker">${etf.ticker || "—"}</td>
+        <td class="num">${fmtPrice(etf.price)}</td>
+        <td class="num ${dayClass}">${fmtPct(etf.dayPct)}</td>
+        <td><span class="status ${smaClass(vs)}">${vs}</span>${etf.pctVsSma50 == null ? "" : ` <span class="meta">(${fmtPct(etf.pctVsSma50)})</span>`}</td>
+        <td><span class="badge ${conf}">${etf.confluence || "—"}</span></td>
+      </tr>`;
     }).join("");
+    etfListEl.innerHTML = `<section>
+      <h2>ETF list <span>${etfs.length} rows</span></h2>
+      <div class="etf-summary">
+        <div class="pill">Universe <strong>${etfList.universe ?? "—"}</strong></div>
+        <div class="pill">Equal-weight day <strong>${fmtPct(etfList.eqDayPct)}</strong></div>
+        <div class="pill">SMA50 <strong>${etfList.smaSummary || "—"}</strong></div>
+        ${listSheet}
+      </div>
+      <div class="table-wrap"><table class="compact">
+        <thead><tr><th>Ticker</th><th>Price</th><th>Day</th><th>vs SMA50</th><th>Confluence</th></tr></thead>
+        <tbody>${etfRows || '<tr><td colspan="5" class="empty">No ETF-list rows yet.</td></tr>'}</tbody>
+      </table></div>
+    </section>`;
+
+    const grouped = {};
+    (data.movers || []).forEach(mover => {
+      const list = mover.list || "Movers";
+      const period = mover.period || "other";
+      const side = (mover.side || "other").toLowerCase();
+      grouped[list] ||= {};
+      grouped[list][period] ||= {};
+      grouped[list][period][side] ||= [];
+      grouped[list][period][side].push(mover);
+    });
+    const listOrder = ["QQQ", "SPMO", "IPO", "ETF_LIST"];
+    const listKeys = listOrder.filter(key => grouped[key]).concat(
+      Object.keys(grouped).filter(key => !listOrder.includes(key))
+    );
+    const periodOrder = ["day", "week", "ytd"];
+    moversEl.innerHTML = listKeys.map(list => {
+      const periods = periodOrder.filter(period => grouped[list][period]).concat(
+        Object.keys(grouped[list]).filter(period => !periodOrder.includes(period))
+      );
+      const periodHtml = periods.map(period => {
+        const sides = grouped[list][period];
+        const sideKeys = ["gainer", "loser"].filter(side => sides[side]).concat(
+          Object.keys(sides).filter(side => !["gainer", "loser"].includes(side))
+        );
+        const sideHtml = sideKeys.map(side => {
+          const rows = sides[side].sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999)).map(mover => {
+            const pctClass = (mover.pct ?? 0) >= 0 ? "pos" : "neg";
+            const vs = mover.vsSma50 || "—";
+            return `<tr>
+              <td class="num">${mover.rank ?? "—"}</td>
+              <td class="ticker" title="${mover.name || ""}">${mover.ticker || "—"}</td>
+              <td class="num ${pctClass}">${fmtPct(mover.pct)}</td>
+              <td><span class="status ${smaClass(vs)}">${vs}</span></td>
+            </tr>`;
+          }).join("");
+          return `<div class="mover-side ${side}">
+            <h4>${side}</h4>
+            <table><thead><tr><th>Rank</th><th>Ticker</th><th>%</th><th>vs SMA50</th></tr></thead><tbody>${rows}</tbody></table>
+          </div>`;
+        }).join("");
+        return `<div class="mover-period">
+          <h3>${period.toUpperCase()} <span>${sideKeys.map(side => `${side}: ${sides[side].length}`).join(" · ")}</span></h3>
+          <div class="mover-sides">${sideHtml}</div>
+        </div>`;
+      }).join("");
+      return `<section><h2>${list} movers <span>${Object.values(grouped[list]).reduce((total, period) => total + Object.values(period).reduce((subtotal, side) => subtotal + side.length, 0), 0)} rows</span></h2>${periodHtml}</section>`;
+    }).join("");
+    if (!listKeys.length) moversEl.innerHTML = '<section><div class="empty">No movers yet.</div></section>';
   }
 
   document.querySelectorAll(".tab").forEach(btn => {
