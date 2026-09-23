@@ -233,47 +233,47 @@
 
 <script>
   window.POSITIONS_10DMA = {
-    updated: "Wed 23 Sep 2026, 8:12pm UK",
-    session: "Evening snapshot",
+    updated: "Wed 23 Sep 2026, 9:24pm UK",
+    session: "End of day",
     market: [
-      {ticker: "SPY", status: "ABOVE", price: 768.17, dayPct: -0.67, note: "~0.6% above 10DMA"},
-      {ticker: "QQQ", status: "ABOVE", price: 741.27, dayPct: -0.83, note: ""}
+      {ticker: "SPY", status: "ABOVE", price: 767.75, dayPct: -0.73, note: "~0.6% above 10DMA"},
+      {ticker: "QQQ", status: "ABOVE", price: 741.17, dayPct: -0.84, note: ""}
     ],
     lists: [
       {
         name: "FT Positions",
         positions: [
-          {ticker: "PLTR", status: "ABOVE", price: 190.85, dayPct: 3.17, note: ""},
-          {ticker: "BE", status: "ABOVE", price: 273.43, dayPct: -1.12, note: ""},
-          {ticker: "IREN", status: "ABOVE", price: 48.03, dayPct: -1.07, note: ""},
-          {ticker: "LITE", status: "ABOVE", price: 934.00, dayPct: -1.23, note: ""},
-          {ticker: "INTC", status: "ABOVE", price: 121.01, dayPct: -2.30, note: ""},
-          {ticker: "SNDK", status: "ABOVE", price: 1814.80, dayPct: -3.83, note: ""},
-          {ticker: "TAOX", status: "ABOVE", price: 4.29, dayPct: -4.45, note: ""}
+          {ticker: "PLTR", status: "ABOVE", price: 191.77, dayPct: 3.67, note: ""},
+          {ticker: "BE", status: "ABOVE", price: 275.03, dayPct: -0.54, note: ""},
+          {ticker: "IREN", status: "ABOVE", price: 47.04, dayPct: -3.11, note: ""},
+          {ticker: "LITE", status: "ABOVE", price: 936.7, dayPct: -0.95, note: ""},
+          {ticker: "INTC", status: "ABOVE", price: 122.6, dayPct: -1.02, note: ""},
+          {ticker: "SNDK", status: "ABOVE", price: 1815.93, dayPct: -3.77, note: ""},
+          {ticker: "TAOX", status: "ABOVE", price: 4.32, dayPct: -3.79, note: ""}
         ]
       },
       {
         name: "IBKR Positions",
         positions: [
-          {ticker: "TQQQ", status: "ABOVE", price: 78.61, dayPct: -2.75, note: ""},
-          {ticker: "BMNR", status: "ABOVE", price: 27.54, dayPct: -4.26, note: ""},
-          {ticker: "TEM", status: "ABOVE", price: 76.08, dayPct: -1.44, note: ""},
-          {ticker: "IREN", status: "ABOVE", price: 48.19, dayPct: -0.74, note: ""},
-          {ticker: "ARM", status: "ABOVE", price: 334.23, dayPct: 0.31, note: ""}
+          {ticker: "TQQQ", status: "ABOVE", price: 78.64, dayPct: -2.71, note: ""},
+          {ticker: "BMNR", status: "ABOVE", price: 27.46, dayPct: -4.54, note: ""},
+          {ticker: "TEM", status: "ABOVE", price: 76.62, dayPct: -0.74, note: ""},
+          {ticker: "IREN", status: "ABOVE", price: 47.04, dayPct: -3.11, note: ""},
+          {ticker: "ARM", status: "ABOVE", price: 332.56, dayPct: -0.19, note: ""}
         ]
       },
       {
         name: "Hive portfolio",
         positions: [
-          {ticker: "META", status: "ABOVE", price: 748.53, dayPct: 1.62, note: ""},
-          {ticker: "TSLA", status: "ABOVE", price: 380.09, dayPct: 0.32, note: ""},
-          {ticker: "SPY", status: "ABOVE", price: 768.17, dayPct: -0.67, note: "~0.6% above 10DMA"},
-          {ticker: "QQQ", status: "ABOVE", price: 741.27, dayPct: -0.83, note: ""},
-          {ticker: "NVDA", status: "ABOVE", price: 225.31, dayPct: -1.56, note: ""},
-          {ticker: "TEM", status: "ABOVE", price: 76.10, dayPct: -1.41, note: ""},
-          {ticker: "AMZN", status: "BELOW", price: 250.06, dayPct: -1.93, note: "~1% below 10DMA"},
-          {ticker: "GOOGL", status: "BELOW", price: 339.53, dayPct: -3.31, note: ""},
-          {ticker: "SERV", status: "BELOW", price: 4.39, dayPct: -3.41, note: "near 10DMA (~0.2% below)"}
+          {ticker: "META", status: "ABOVE", price: 744.02, dayPct: 1.01, note: ""},
+          {ticker: "TSLA", status: "ABOVE", price: 380.24, dayPct: 0.35, note: ""},
+          {ticker: "SPY", status: "ABOVE", price: 767.75, dayPct: -0.73, note: "~0.6% above 10DMA"},
+          {ticker: "QQQ", status: "ABOVE", price: 741.17, dayPct: -0.84, note: ""},
+          {ticker: "NVDA", status: "ABOVE", price: 225.51, dayPct: -1.47, note: ""},
+          {ticker: "TEM", status: "ABOVE", price: 76.62, dayPct: -0.74, note: ""},
+          {ticker: "AMZN", status: "BELOW", price: 249.35, dayPct: -2.21, note: "~1.2% below 10DMA"},
+          {ticker: "GOOGL", status: "BELOW", price: 337.86, dayPct: -3.79, note: ""},
+          {ticker: "SERV", status: "BELOW", price: 4.32, dayPct: -5.16, note: ""}
         ]
       }
     ]
@@ -3086,7 +3086,6 @@
     }
   ]
 };
-
   function fmtPct(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     return (n >= 0 ? "+" : "") + Number(n).toFixed(2) + "%";
