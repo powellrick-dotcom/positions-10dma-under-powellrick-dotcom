@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Positions · 10DMA</title>
+<title>Trading dashboard</title>
 <style>
   :root {
     --bg: #0f1419;
@@ -16,6 +16,7 @@
     --below: #ff6b6b;
     --below-bg: rgba(255, 107, 107, 0.14);
     --accent: #5b9fd4;
+    --accent-bg: rgba(91, 159, 212, 0.15);
   }
   * { box-sizing: border-box; }
   body {
@@ -32,45 +33,69 @@
     gap: 1rem;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 1.25rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 1rem;
+    margin-bottom: 1rem;
   }
   h1 { margin: 0; font-size: 1.35rem; font-weight: 650; letter-spacing: -0.02em; }
   .meta { color: var(--muted); font-size: 0.9rem; }
+  .tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.65rem;
+  }
+  .tab {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 0.45rem 0.9rem;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--text);
+    background: var(--accent-bg);
+    border-color: var(--border);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
   .market {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 0.75rem;
     margin-bottom: 1.25rem;
   }
-  .market-card {
+  .market-card, .etf-card {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1rem 1.1rem;
   }
-  .market-card .label {
+  .market-card .label, .etf-card .label {
     color: var(--muted);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.35rem;
   }
-  .market-card .row {
+  .market-card .row, .etf-card .row {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem;
   }
-  .market-card .sym { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.02em; }
-  .market-card .price { font-variant-numeric: tabular-nums; color: var(--muted); }
-  .market-card .bottom {
+  .sym { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.02em; }
+  .price { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .bottom {
     margin-top: 0.55rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
   }
   .summary {
     display: flex;
@@ -111,7 +136,7 @@
   th { color: var(--muted); font-weight: 550; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
   tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
   .ticker { font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
-  .status {
+  .status, .badge {
     display: inline-block;
     padding: 0.15rem 0.55rem;
     border-radius: 6px;
@@ -119,8 +144,9 @@
     font-weight: 650;
     letter-spacing: 0.03em;
   }
-  .status.above { color: var(--above); background: var(--above-bg); }
-  .status.below { color: var(--below); background: var(--below-bg); }
+  .status.above, .badge.strong { color: var(--above); background: var(--above-bg); }
+  .status.below, .badge.weak { color: var(--below); background: var(--below-bg); }
+  .badge.mixed { color: var(--accent); background: var(--accent-bg); }
   .num { font-variant-numeric: tabular-nums; }
   .pos { color: var(--above); }
   .neg { color: var(--below); }
@@ -139,26 +165,35 @@
 <body>
   <header>
     <div>
-      <h1>Positions · 10-day MA</h1>
-      <div class="meta">Market context · FT · IBKR · Hive · updated twice daily (UK weekdays)</div>
+      <h1>Trading dashboard</h1>
+      <div class="meta">Positions 10DMA · Markets (QQQ / SPMO / IPO)</div>
     </div>
-    <div class="meta" id="updated">Awaiting first snapshot…</div>
+    <div class="meta" id="header-updated">—</div>
   </header>
 
-  <div class="market" id="market"></div>
-
-  <div class="summary" id="summary">
-    <div class="pill">Positions <strong id="total-count">—</strong></div>
-    <div class="pill ok">Above <strong id="above-count">—</strong></div>
-    <div class="pill bad">Below <strong id="below-count">—</strong></div>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="positions" type="button">Positions</button>
+    <button class="tab" data-tab="markets" type="button">Markets</button>
   </div>
 
-  <div id="lists">
-    <section><div class="empty">No data yet. The next morning or evening check will fill this page.</div></section>
+  <div id="panel-positions" class="panel active">
+    <div class="market" id="market"></div>
+    <div class="summary">
+      <div class="pill">Positions <strong id="total-count">—</strong></div>
+      <div class="pill ok">Above <strong id="above-count">—</strong></div>
+      <div class="pill bad">Below <strong id="below-count">—</strong></div>
+    </div>
+    <div id="lists"></div>
+  </div>
+
+  <div id="panel-markets" class="panel">
+    <div class="meta" id="markets-updated" style="margin-bottom:0.85rem"></div>
+    <div class="market" id="etfs"></div>
+    <div id="movers"></div>
   </div>
 
   <footer>
-    Source: Deepvue · Signal: price vs daily SMA10 · SPY/QQQ shown as market context at top · Not financial advice
+    Sources: Deepvue (positions) · Markets bot (QQQ/SPMO/IPO) · Not financial advice
   </footer>
 
 <script>
@@ -209,53 +244,52 @@
     ]
   };
 
+  // Filled by Markets bot each morning (QQQ / SPMO / IPO briefing).
+  window.MARKETS_BRIEFING = {
+    updated: null,
+    session: null,
+    etfs: [],
+    movers: []
+  };
+
   function fmtPct(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     return (n >= 0 ? "+" : "") + Number(n).toFixed(2) + "%";
   }
-
   function fmtPrice(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     return Number(n).toLocaleString("en-US", { style: "currency", currency: "USD" });
   }
 
-  function render() {
+  function renderPositions() {
     const data = window.POSITIONS_10DMA;
-    const updatedEl = document.getElementById("updated");
     const listsEl = document.getElementById("lists");
     const marketEl = document.getElementById("market");
-
     if (!data.updated || !data.lists || !data.lists.length) {
-      updatedEl.textContent = "Awaiting first snapshot…";
+      listsEl.innerHTML = '<section><div class="empty">No positions snapshot yet.</div></section>';
       return;
     }
-    updatedEl.textContent = data.updated + (data.session ? " · " + data.session : "");
+    document.getElementById("header-updated").textContent =
+      "Positions · " + data.updated + (data.session ? " · " + data.session : "");
 
-    const market = data.market || [];
-    marketEl.innerHTML = market.map(m => {
+    marketEl.innerHTML = (data.market || []).map(m => {
       const st = m.status === "ABOVE" ? "above" : "below";
       const dayClass = (m.dayPct ?? 0) >= 0 ? "pos" : "neg";
       return `<div class="market-card">
         <div class="label">Market · 10DMA</div>
-        <div class="row">
-          <div class="sym">${m.ticker}</div>
-          <div class="price">${fmtPrice(m.price)}</div>
-        </div>
+        <div class="row"><div class="sym">${m.ticker}</div><div class="price">${fmtPrice(m.price)}</div></div>
         <div class="bottom">
           <span class="status ${st}">${m.status}</span>
           <span class="num ${dayClass}">${fmtPct(m.dayPct)}</span>
         </div>
         ${m.note ? `<div class="meta" style="margin-top:0.45rem">${m.note}</div>` : ""}
       </div>`;
-    }).join("") || "";
+    }).join("");
 
     let above = 0, below = 0, total = 0;
-    data.lists.forEach(list => {
-      list.positions.forEach(p => {
-        total++;
-        if (p.status === "ABOVE") above++; else below++;
-      });
-    });
+    data.lists.forEach(list => list.positions.forEach(p => {
+      total++; if (p.status === "ABOVE") above++; else below++;
+    }));
     document.getElementById("total-count").textContent = total;
     document.getElementById("above-count").textContent = above;
     document.getElementById("below-count").textContent = below;
@@ -278,13 +312,98 @@
         <h2>${list.name} <span>${a} above · ${b} below</span></h2>
         <table>
           <thead><tr><th>Ticker</th><th>10DMA</th><th>Price</th><th>Day</th><th></th></tr></thead>
-          <tbody>${rows || '<tr><td colspan="5" class="empty">No positions</td></tr>'}</tbody>
+          <tbody>${rows}</tbody>
         </table>
       </section>`;
     }).join("");
   }
 
-  render();
+  function confluenceClass(c) {
+    const v = (c || "").toLowerCase();
+    if (v === "strong") return "strong";
+    if (v === "weak") return "weak";
+    return "mixed";
+  }
+
+  function renderMarkets() {
+    const data = window.MARKETS_BRIEFING || {};
+    const etfsEl = document.getElementById("etfs");
+    const moversEl = document.getElementById("movers");
+    const upd = document.getElementById("markets-updated");
+
+    if (!data.updated || !(data.etfs && data.etfs.length)) {
+      upd.textContent = "Waiting for Markets bot morning briefing…";
+      etfsEl.innerHTML = "";
+      moversEl.innerHTML = '<section><div class="empty">Markets tab fills after the weekday ~8:29am UK Markets bot run (QQQ / SPMO / IPO · SMA50 · D+W MACD).</div></section>';
+      return;
+    }
+    upd.textContent = data.updated + (data.session ? " · " + data.session : "");
+
+    etfsEl.innerHTML = data.etfs.map(e => {
+      const dayClass = (e.dayPct ?? 0) >= 0 ? "pos" : "neg";
+      const vs = (e.vsSma50 || "").toUpperCase() === "ABOVE" ? "above" : "below";
+      const conf = confluenceClass(e.confluence);
+      return `<div class="etf-card">
+        <div class="label">ETF · SMA50 · MACD D+W</div>
+        <div class="row"><div class="sym">${e.ticker}</div><div class="price">${fmtPrice(e.price)}</div></div>
+        <div class="bottom">
+          <span class="status ${vs}">SMA50 ${e.vsSma50 || "—"}</span>
+          <span class="badge ${conf}">${e.confluence || "—"}</span>
+          <span class="num ${dayClass}">${fmtPct(e.dayPct)}</span>
+        </div>
+        ${e.note ? `<div class="meta" style="margin-top:0.45rem">${e.note}</div>` : ""}
+      </div>`;
+    }).join("");
+
+    const byList = {};
+    (data.movers || []).forEach(m => {
+      const k = m.list || "Movers";
+      (byList[k] = byList[k] || []).push(m);
+    });
+    const keys = Object.keys(byList);
+    if (!keys.length) {
+      moversEl.innerHTML = "";
+      return;
+    }
+    moversEl.innerHTML = keys.map(k => {
+      const rows = byList[k].map(m => {
+        const dayClass = (m.dayPct ?? 0) >= 0 ? "pos" : "neg";
+        return `<tr>
+          <td class="ticker">${m.ticker}</td>
+          <td class="num ${dayClass}">${fmtPct(m.dayPct)}</td>
+          <td class="meta">${m.note || ""}</td>
+        </tr>`;
+      }).join("");
+      return `<section>
+        <h2>${k} movers <span>${byList[k].length}</span></h2>
+        <table>
+          <thead><tr><th>Ticker</th><th>Day</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </section>`;
+    }).join("");
+  }
+
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+      const pos = window.POSITIONS_10DMA;
+      const mkt = window.MARKETS_BRIEFING;
+      if (btn.dataset.tab === "markets" && mkt && mkt.updated) {
+        document.getElementById("header-updated").textContent =
+          "Markets · " + mkt.updated + (mkt.session ? " · " + mkt.session : "");
+      } else if (pos && pos.updated) {
+        document.getElementById("header-updated").textContent =
+          "Positions · " + pos.updated + (pos.session ? " · " + pos.session : "");
+      }
+    });
+  });
+
+  renderPositions();
+  renderMarkets();
 </script>
 </body>
 </html>
