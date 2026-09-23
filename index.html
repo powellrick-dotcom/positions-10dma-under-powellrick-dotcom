@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Positions · 10DMA</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2332;
+    --border: #2a3544;
+    --text: #e7ecf3;
+    --muted: #8b9bb0;
+    --above: #3dd68c;
+    --above-bg: rgba(61, 214, 140, 0.12);
+    --below: #ff6b6b;
+    --below-bg: rgba(255, 107, 107, 0.14);
+    --accent: #5b9fd4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+    padding: 1.5rem;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+  h1 { margin: 0; font-size: 1.35rem; font-weight: 650; letter-spacing: -0.02em; }
+  .meta { color: var(--muted); font-size: 0.9rem; }
+  .market {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .market-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+  }
+  .market-card .label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+  .market-card .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .market-card .sym { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.02em; }
+  .market-card .price { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .market-card .bottom {
+    margin-top: 0.55rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .pill {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+  }
+  .pill strong { font-weight: 650; }
+  .pill.ok strong { color: var(--above); }
+  .pill.bad strong { color: var(--below); }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  section h2 {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  section h2 span { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  th, td { padding: 0.65rem 1rem; text-align: left; }
+  th { color: var(--muted); font-weight: 550; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+  .ticker { font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  .status {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+  }
+  .status.above { color: var(--above); background: var(--above-bg); }
+  .status.below { color: var(--below); background: var(--below-bg); }
+  .num { font-variant-numeric: tabular-nums; }
+  .pos { color: var(--above); }
+  .neg { color: var(--below); }
+  .empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--muted);
+  }
+  footer {
+    margin-top: 1.25rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Positions · 10-day MA</h1>
+      <div class="meta">Market context · FT · IBKR · Hive · updated twice daily (UK weekdays)</div>
+    </div>
+    <div class="meta" id="updated">Awaiting first snapshot…</div>
+  </header>
+
+  <div class="market" id="market"></div>
+
+  <div class="summary" id="summary">
+    <div class="pill">Positions <strong id="total-count">—</strong></div>
+    <div class="pill ok">Above <strong id="above-count">—</strong></div>
+    <div class="pill bad">Below <strong id="below-count">—</strong></div>
+  </div>
+
+  <div id="lists">
+    <section><div class="empty">No data yet. The next morning or evening check will fill this page.</div></section>
+  </div>
+
+  <footer>
+    Source: Deepvue · Signal: price vs daily SMA10 · SPY/QQQ shown as market context at top · Not financial advice
+  </footer>
+
+<script>
+  window.POSITIONS_10DMA = {
+    updated: "Wed 23 Sep 2026, 8:12pm UK",
+    session: "Evening snapshot",
+    market: [
+      {ticker: "SPY", status: "ABOVE", price: 768.17, dayPct: -0.67, note: "~0.6% above 10DMA"},
+      {ticker: "QQQ", status: "ABOVE", price: 741.27, dayPct: -0.83, note: ""}
+    ],
+    lists: [
+      {
+        name: "FT Positions",
+        positions: [
+          {ticker: "PLTR", status: "ABOVE", price: 190.85, dayPct: 3.17, note: ""},
+          {ticker: "BE", status: "ABOVE", price: 273.43, dayPct: -1.12, note: ""},
+          {ticker: "IREN", status: "ABOVE", price: 48.03, dayPct: -1.07, note: ""},
+          {ticker: "LITE", status: "ABOVE", price: 934.00, dayPct: -1.23, note: ""},
+          {ticker: "INTC", status: "ABOVE", price: 121.01, dayPct: -2.30, note: ""},
+          {ticker: "SNDK", status: "ABOVE", price: 1814.80, dayPct: -3.83, note: ""},
+          {ticker: "TAOX", status: "ABOVE", price: 4.29, dayPct: -4.45, note: ""}
+        ]
+      },
+      {
+        name: "IBKR Positions",
+        positions: [
+          {ticker: "TQQQ", status: "ABOVE", price: 78.61, dayPct: -2.75, note: ""},
+          {ticker: "BMNR", status: "ABOVE", price: 27.54, dayPct: -4.26, note: ""},
+          {ticker: "TEM", status: "ABOVE", price: 76.08, dayPct: -1.44, note: ""},
+          {ticker: "IREN", status: "ABOVE", price: 48.19, dayPct: -0.74, note: ""},
+          {ticker: "ARM", status: "ABOVE", price: 334.23, dayPct: 0.31, note: ""}
+        ]
+      },
+      {
+        name: "Hive portfolio",
+        positions: [
+          {ticker: "META", status: "ABOVE", price: 748.53, dayPct: 1.62, note: ""},
+          {ticker: "TSLA", status: "ABOVE", price: 380.09, dayPct: 0.32, note: ""},
+          {ticker: "SPY", status: "ABOVE", price: 768.17, dayPct: -0.67, note: "~0.6% above 10DMA"},
+          {ticker: "QQQ", status: "ABOVE", price: 741.27, dayPct: -0.83, note: ""},
+          {ticker: "NVDA", status: "ABOVE", price: 225.31, dayPct: -1.56, note: ""},
+          {ticker: "TEM", status: "ABOVE", price: 76.10, dayPct: -1.41, note: ""},
+          {ticker: "AMZN", status: "BELOW", price: 250.06, dayPct: -1.93, note: "~1% below 10DMA"},
+          {ticker: "GOOGL", status: "BELOW", price: 339.53, dayPct: -3.31, note: ""},
+          {ticker: "SERV", status: "BELOW", price: 4.39, dayPct: -3.41, note: "near 10DMA (~0.2% below)"}
+        ]
+      }
+    ]
+  };
+
+  function fmtPct(n) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    return (n >= 0 ? "+" : "") + Number(n).toFixed(2) + "%";
+  }
+
+  function fmtPrice(n) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    return Number(n).toLocaleString("en-US", { style: "currency", currency: "USD" });
+  }
+
+  function render() {
+    const data = window.POSITIONS_10DMA;
+    const updatedEl = document.getElementById("updated");
+    const listsEl = document.getElementById("lists");
+    const marketEl = document.getElementById("market");
+
+    if (!data.updated || !data.lists || !data.lists.length) {
+      updatedEl.textContent = "Awaiting first snapshot…";
+      return;
+    }
+    updatedEl.textContent = data.updated + (data.session ? " · " + data.session : "");
+
+    const market = data.market || [];
+    marketEl.innerHTML = market.map(m => {
+      const st = m.status === "ABOVE" ? "above" : "below";
+      const dayClass = (m.dayPct ?? 0) >= 0 ? "pos" : "neg";
+      return `<div class="market-card">
+        <div class="label">Market · 10DMA</div>
+        <div class="row">
+          <div class="sym">${m.ticker}</div>
+          <div class="price">${fmtPrice(m.price)}</div>
+        </div>
+        <div class="bottom">
+          <span class="status ${st}">${m.status}</span>
+          <span class="num ${dayClass}">${fmtPct(m.dayPct)}</span>
+        </div>
+        ${m.note ? `<div class="meta" style="margin-top:0.45rem">${m.note}</div>` : ""}
+      </div>`;
+    }).join("") || "";
+
+    let above = 0, below = 0, total = 0;
+    data.lists.forEach(list => {
+      list.positions.forEach(p => {
+        total++;
+        if (p.status === "ABOVE") above++; else below++;
+      });
+    });
+    document.getElementById("total-count").textContent = total;
+    document.getElementById("above-count").textContent = above;
+    document.getElementById("below-count").textContent = below;
+
+    listsEl.innerHTML = data.lists.map(list => {
+      const a = list.positions.filter(p => p.status === "ABOVE").length;
+      const b = list.positions.filter(p => p.status === "BELOW").length;
+      const rows = list.positions.map(p => {
+        const dayClass = (p.dayPct ?? 0) >= 0 ? "pos" : "neg";
+        const st = p.status === "ABOVE" ? "above" : "below";
+        return `<tr>
+          <td class="ticker">${p.ticker}</td>
+          <td><span class="status ${st}">${p.status}</span></td>
+          <td class="num">${fmtPrice(p.price)}</td>
+          <td class="num ${dayClass}">${fmtPct(p.dayPct)}</td>
+          <td class="meta">${p.note || ""}</td>
+        </tr>`;
+      }).join("");
+      return `<section>
+        <h2>${list.name} <span>${a} above · ${b} below</span></h2>
+        <table>
+          <thead><tr><th>Ticker</th><th>10DMA</th><th>Price</th><th>Day</th><th></th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="5" class="empty">No positions</td></tr>'}</tbody>
+        </table>
+      </section>`;
+    }).join("");
+  }
+
+  render();
+</script>
+</body>
+</html>
