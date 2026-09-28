@@ -233,21 +233,21 @@
 
 <script>
   window.POSITIONS_10DMA = {
-  "updated": "Fri 25 Sep 2026, 9:10pm UK",
-  "session": "End of day",
+  "updated": "Mon 28 Sep 2026, 8:05am UK",
+  "session": "Morning",
   "market": [
     {
       "ticker": "SPY",
       "status": "ABOVE",
-      "price": 771.3,
+      "price": 771.35,
       "dayPct": 0.54,
       "note": "~near 10DMA (above)"
     },
     {
       "ticker": "QQQ",
       "status": "ABOVE",
-      "price": 744.44,
-      "dayPct": 0.45,
+      "price": 744.5,
+      "dayPct": 0.46,
       "note": ""
     }
   ],
@@ -258,22 +258,29 @@
         {
           "ticker": "BE",
           "status": "ABOVE",
-          "price": 288.65,
-          "dayPct": 8.25,
+          "price": 288.7,
+          "dayPct": 8.27,
           "note": ""
         },
         {
           "ticker": "TEM",
           "status": "ABOVE",
-          "price": 85.05,
-          "dayPct": 3.42,
+          "price": 85.01,
+          "dayPct": 3.37,
           "note": ""
         },
         {
           "ticker": "LITE",
           "status": "ABOVE",
-          "price": 941.64,
+          "price": 941.65,
           "dayPct": 1.36,
+          "note": ""
+        },
+        {
+          "ticker": "TAOX",
+          "status": "ABOVE",
+          "price": 4.43,
+          "dayPct": -0.89,
           "note": ""
         },
         {
@@ -284,31 +291,24 @@
           "note": ""
         },
         {
-          "ticker": "TAOX",
-          "status": "ABOVE",
-          "price": 4.41,
-          "dayPct": -1.34,
-          "note": ""
-        },
-        {
           "ticker": "PLTR",
           "status": "ABOVE",
-          "price": 189.66,
+          "price": 189.67,
           "dayPct": -1.52,
           "note": ""
         },
         {
           "ticker": "INTC",
           "status": "ABOVE",
-          "price": 122.96,
-          "dayPct": -3.48,
+          "price": 123.0,
+          "dayPct": -3.45,
           "note": ""
         },
         {
           "ticker": "IREN",
           "status": "BELOW",
           "price": 44.13,
-          "dayPct": -4.38,
+          "dayPct": -4.39,
           "note": ""
         }
       ]
@@ -319,15 +319,15 @@
         {
           "ticker": "TEM",
           "status": "ABOVE",
-          "price": 85.05,
-          "dayPct": 3.42,
+          "price": 85.01,
+          "dayPct": 3.37,
           "note": ""
         },
         {
           "ticker": "ARM",
           "status": "ABOVE",
-          "price": 310.55,
-          "dayPct": 1.37,
+          "price": 310.32,
+          "dayPct": 1.3,
           "note": ""
         },
         {
@@ -340,15 +340,15 @@
         {
           "ticker": "BMNR",
           "status": "ABOVE",
-          "price": 27.54,
-          "dayPct": -1.75,
+          "price": 27.56,
+          "dayPct": -1.68,
           "note": ""
         },
         {
           "ticker": "IREN",
           "status": "BELOW",
           "price": 44.13,
-          "dayPct": -4.38,
+          "dayPct": -4.39,
           "note": ""
         }
       ]
@@ -359,70 +359,71 @@
         {
           "ticker": "TEM",
           "status": "ABOVE",
-          "price": 85.05,
-          "dayPct": 3.42,
+          "price": 85.01,
+          "dayPct": 3.37,
           "note": ""
         },
         {
           "ticker": "SPY",
           "status": "ABOVE",
-          "price": 771.3,
+          "price": 771.35,
           "dayPct": 0.54,
           "note": "~near 10DMA (above)"
         },
         {
           "ticker": "QQQ",
           "status": "ABOVE",
-          "price": 744.44,
-          "dayPct": 0.45,
+          "price": 744.5,
+          "dayPct": 0.46,
           "note": ""
         },
         {
           "ticker": "GOOGL",
           "status": "BELOW",
-          "price": 343.84,
-          "dayPct": 0.43,
+          "price": 343.92,
+          "dayPct": 0.46,
           "note": "~near 10DMA (below)"
         },
         {
           "ticker": "NVDA",
           "status": "ABOVE",
-          "price": 225.08,
+          "price": 225.07,
           "dayPct": 0.22,
           "note": ""
         },
         {
           "ticker": "AMZN",
           "status": "BELOW",
-          "price": 249.74,
-          "dayPct": 0.14,
+          "price": 249.67,
+          "dayPct": 0.12,
           "note": "~near 10DMA (below)"
         },
         {
           "ticker": "SERV",
           "status": "ABOVE",
-          "price": 4.47,
-          "dayPct": -0.89,
-          "note": ""
+          "price": 4.45,
+          "dayPct": -1.33,
+          "note": "~near 10DMA (above)"
         },
         {
           "ticker": "TSLA",
           "status": "ABOVE",
-          "price": 372.08,
-          "dayPct": -1.55,
+          "price": 372.11,
+          "dayPct": -1.54,
           "note": "~near 10DMA (above)"
         },
         {
           "ticker": "META",
           "status": "ABOVE",
-          "price": 751.9,
-          "dayPct": -3.3,
+          "price": 751.66,
+          "dayPct": -3.33,
           "note": ""
         }
       ]
     }
   ]
 };
+
 
   // Raw markets.json snapshot from Markets bot.
   window.MARKETS_BRIEFING = {
@@ -3231,6 +3232,7 @@
     }
   ]
 };
+
   function fmtPct(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     return (n >= 0 ? "+" : "") + Number(n).toFixed(2) + "%";
